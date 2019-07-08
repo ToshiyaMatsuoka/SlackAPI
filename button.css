@@ -1,0 +1,56 @@
+﻿.button {
+    margin: 20px auto;
+    width: 100px;
+    align-content: center;
+  }
+  
+.messagesContainer {
+  margin: 30 auto;
+  width: 90%;
+  height: 85%;
+  max-width: 1000px;
+  padding: 1em;
+  border: 1px solid #CCC;
+  border-radius: 1em;
+  overflow-y: scroll;
+}
+
+div{
+  font-family: 'monospace';
+}
+
+.page {
+  width: 100%;
+}
+
+.row {
+  border-radius: 1em;
+  border: 1px solid #CCC;
+  padding: 1em;
+  margin: 1em;
+  width:70%;
+  background-color: gainsboro;
+}
+
+.time {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 30%;
+}
+
+.user {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 30%;
+}
+.userImg {
+  display: inline-block;
+  width:8%;
+  height:8%;
+}
+
+.message {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 90%;
+}
