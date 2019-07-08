@@ -22,6 +22,7 @@ const getMessages = (last =null) => {
 	request.send(null);
 
 	request.onload = () => {
+
 	const response = JSON.parse(request.responseText);
 	const pageElement = document.createElement("div");
 	pageElement.className = "page";
@@ -33,7 +34,14 @@ const getMessages = (last =null) => {
 	// 新しいものから格納されているので、リストの最後から見ていく
 	const messageCount = response.messages.length;
 	for (let i = messageCount - 1; i >= 0; i--) {
-		
+		const resElement = document.createElement("div");
+		resElement.className = "res";
+	
+		let userUrl =`https://slack.com/api/users.info?token=${token}&user=${response.messages[i].user}`;
+		const UserRequest = new XMLHttpRequest();
+		UserRequest.open("GET", userUrl,true);
+		UserRequest.send(null);	
+
 		// メッセージ本文
 		const messageElement = document.createElement("div");
 		messageElement.className = "message";
@@ -45,38 +53,32 @@ const getMessages = (last =null) => {
 		rowElement.appendChild(messageElement);
 
 		const userElement = document.createElement("div");
-		userElement.className = "user";
-		var userImg = new Image();
-		userImg.className = "userImg";
-		let userId =`https://slack.com/api/users.info?token=${token}&user=${response.messages[i].user}`;
-		const UserRequest = new XMLHttpRequest();
-		UserRequest.open("GET", userId,true);
-		UserRequest.send(null);	
+		const userImg = document.createElement("img");
 		UserRequest.onload=()=>{
+		userElement.className = "user";
+		userImg.className = "userImg";
 		const UserResponse = JSON.parse(UserRequest.responseText);
-		const imgUrl =UserResponse.user.profile.image_72;
-		userImg.src=imgUrl;
-		userImg.onload=()=>{
-			userImg.src=imgUrl;
-		}
+		
+		userImg.src=UserResponse.user.profile.image_72;
+		
 		if(!UserResponse.user.profile.display_name){
 			userElement.textContent = UserResponse.user.name;
 		}
 		else{
 			userElement.textContent = UserResponse.user.profile.display_name;
 		}
-	}
+		}
 		// 投稿時間
 		const timeElement = document.createElement("div");
 		timeElement.className = "time";
 		timeElement.textContent = new Date(response.messages[i].ts * 1000).toLocaleString();
 		
-		pageElement.appendChild(rowElement);
-		pageElement.appendChild(userImg);
-		pageElement.appendChild(userElement);
-		pageElement.appendChild(timeElement);
+		resElement.appendChild(userImg);
+		resElement.appendChild(userElement);
+		resElement.appendChild(rowElement);
+		resElement.appendChild(timeElement);
+		pageElement.appendChild(resElement);
 	}
-
 	const messagesContainer = document.querySelector(".messagesContainer");
 	if (messagesContainer.childElementCount === 0) {
 		messagesContainer.appendChild(pageElement);
