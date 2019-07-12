@@ -10,9 +10,17 @@
     <body>
             <div>
                 <div class="messagesContainer"></div>
-                    <div class="button">
-                        <input id="btnStart" type="button" value="Get" />
-                    </div>
             </div>
+            <form name='sendText'>
+                <textarea
+                    class="textBox"
+                    name='textBox'
+                    onChange='alertValue(this)'
+                    rows="3" cols="50" wrap="hard"/></textarea>
+                <input type="text" style="display:none;"/>
+                <a>
+                    <input id="sender" type="button" onclick="submit();" value="送信" />
+                </a>
+</form>
     </body>
 </HTML>
