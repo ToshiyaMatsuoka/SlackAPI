@@ -13,6 +13,22 @@
   background-color: rgb(9, 107, 9);
   color: #fff;
 }  
+#about {
+  font-size: 1.5em;
+  font-weight: bold;
+  padding: 5px 15px;
+  background-color: lawngreen;
+  color: #fff;
+  border-style: none;
+  position: relative;
+  top: -1em;
+}
+
+#about:hover {
+  background-color: rgb(9, 107, 9);
+  color: #fff;
+}  
+
 .messagesContainer {
   margin: 30 auto;
   width: 100%;
@@ -158,3 +174,10 @@ form{
   text-align:center;
 }
 
+.textAria{
+  margin-top: 10%;
+  position: relative;
+  display: inline-block;
+  width: 50%;
+  left:25%;
+}
