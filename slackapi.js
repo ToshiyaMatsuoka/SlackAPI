@@ -6,9 +6,15 @@
 	button.addEventListener("click",sendMessage(token,channelID));
 	const messagesContainer = document.querySelector(".messagesContainer");
 	messagesContainer.textContent = null;
-	getMessages(token,channelID);
+	let userUrl =`https://slack.com/api/users.list?token=${token}`;
+	const UserRequest = new XMLHttpRequest();
+	UserRequest.open("GET", userUrl,true);
+	UserRequest.send(null);	
+	UserRequest.onload=()=>{
+	getMessages(token,channelID,UserRequest);
+	}
 };
-const getMessages = (token,channelID,last =null) => {
+const getMessages = (token,channelID,UserRequest,last =null) => {
 	const request = new XMLHttpRequest();
 	let url = `https://slack.com/api/channels.history?token=${token}&channel=${channelID}&count=10`;
 	if(last){
@@ -23,17 +29,17 @@ const getMessages = (token,channelID,last =null) => {
 	request.onload = () => {
 
 	const response = JSON.parse(request.responseText);
-	SetMessases(response,token);
+	SetMessases(response,UserRequest);
 	if (response.has_more) {
 		const messageCount = response.messages.length;
 		const oldestTimeStamp = response.messages[messageCount - 1].ts;
-		getMessages(token,channelID,oldestTimeStamp);
+		getMessages(token,channelID,UserRequest,oldestTimeStamp);
 	}
 	}
 
 };
 
-const SetMessases = (response,token) => {
+const SetMessases = (response,UserRequest) => {
 
 	const pageElement = document.createElement("div");
 	pageElement.className = "page";
@@ -44,10 +50,6 @@ const SetMessases = (response,token) => {
 		const resElement = document.createElement("div");
 		resElement.className = "res";
 	
-		let userUrl =`https://slack.com/api/users.info?token=${token}&user=${response.messages[i].user}`;
-		const UserRequest = new XMLHttpRequest();
-		UserRequest.open("GET", userUrl,true);
-		UserRequest.send(null);	
 		put(UserRequest,response,i,resElement)
 		pageElement.appendChild(resElement);
 	}
@@ -77,20 +79,23 @@ const put=(UserRequest,response,i,resElement)=>{
 
 	const userElement = document.createElement("div");
 	const userImg = document.createElement("img");
-	UserRequest.onload=()=>{
 	userElement.className = isMine+"user";
 	userImg.className = isMine+"userImg";
 	const UserResponse = JSON.parse(UserRequest.responseText);
-	if(UserResponse.user){
-		userImg.src=UserResponse.user.profile.image_72;
+	let userID =user(response,i,UserResponse);
+
+	if(UserResponse.members[userID]){
+		userImg.src=UserResponse.members[userID].profile.image_72;
 	
-		if(!UserResponse.user.profile.display_name){
-			userElement.textContent = UserResponse.user.name;
+		if(!UserResponse.members[userID].profile.display_name){
+			userElement.textContent = UserResponse.members[userID].name;
 		}
 		else{
-			userElement.textContent = UserResponse.user.profile.display_name;
+			userElement.textContent = UserResponse.members[userID].profile.display_name;
 		}
 	}
+	else{
+		userElement.textContent="BOT";
 	}
 	// 投稿時間
 	const timeElement = document.createElement("div");
@@ -105,12 +110,18 @@ const put=(UserRequest,response,i,resElement)=>{
 	}		
 	else{
 		resElement.appendChild(userImg);
-	resElement.appendChild(userElement);
+		resElement.appendChild(userElement);
 	}
 	resElement.appendChild(rowElement);
 	resElement.appendChild(timeElement);
 };
-
+const user =(response,i,UserResponse)=>{
+	for(j=0;j<UserResponse.members.length;j++){
+	if(response.messages[i].user==UserResponse.members[j].id){
+		return j;
+	}
+	}
+}
 const sendMessage=(token,channelID)=>{
 	const text = sessionStorage.getItem("textData");
 	if(!text) return;
