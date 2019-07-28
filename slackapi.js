@@ -6,7 +6,7 @@
 	button.addEventListener("click",sendMessage(token,channelID));
 	const messagesContainer = document.querySelector(".messagesContainer");
 	messagesContainer.textContent = null;
-	let userUrl =`https://slack.com/api/users.list?token=${token}`;
+	let userUrl = `https://slack.com/api/users.list?token=${token}`;
 	const UserRequest = new XMLHttpRequest();
 	UserRequest.open("GET", userUrl,true);
 	UserRequest.send(null);	
@@ -18,10 +18,10 @@ const getMessages = (token,channelID,UserRequest,last =null) => {
 	const request = new XMLHttpRequest();
 	let url = `https://slack.com/api/channels.history?token=${token}&channel=${channelID}&count=10`;
 	if(last){
-		url+=`&latest=${last}`;
+		url += `&latest=${last}`;
 	}
 	else{
-		url+=`&latest=${Date.now()}`;
+		url += `&latest=${Date.now()}`;
 	}
 	request.open("GET", url,true);
 	request.send(null);
@@ -30,11 +30,11 @@ const getMessages = (token,channelID,UserRequest,last =null) => {
 
 	const response = JSON.parse(request.responseText);
 	SetMessases(response,UserRequest);
-	if (response.has_more) {
-		const messageCount = response.messages.length;
-		const oldestTimeStamp = response.messages[messageCount - 1].ts;
-		getMessages(token,channelID,UserRequest,oldestTimeStamp);
-	}
+		if (response.has_more) {
+			const messageCount = response.messages.length;
+			const oldestTimeStamp = response.messages[messageCount - 1].ts;
+			getMessages(token,channelID,UserRequest,oldestTimeStamp);
+		}
 	}
 
 };
@@ -43,6 +43,7 @@ const SetMessases = (response,UserRequest) => {
 
 	const pageElement = document.createElement("div");
 	pageElement.className = "page";
+	const UserResponse = JSON.parse(UserRequest.responseText);
 
 	// 新しいものから格納されているので、リストの最後から見ていく
 	const messageCount = response.messages.length;
@@ -50,7 +51,7 @@ const SetMessases = (response,UserRequest) => {
 		const resElement = document.createElement("div");
 		resElement.className = "res";
 	
-		put(UserRequest,response,i,resElement)
+		PutElement(UserResponse,response,i,resElement)
 		pageElement.appendChild(resElement);
 	}
 	const messagesContainer = document.querySelector(".messagesContainer");
@@ -62,9 +63,9 @@ const SetMessases = (response,UserRequest) => {
 	}
 };
 
-const put=(UserRequest,response,i,resElement)=>{
-	let isMine ="";
-	if("UB6EXC17U"==response.messages[i].user){
+const PutElement=(UserResponse,response,i,resElement)=>{
+	let isMine = "";
+	if("UB6EXC17U" == response.messages[i].user){
 		isMine = "my";
 	}
 
@@ -74,24 +75,23 @@ const put=(UserRequest,response,i,resElement)=>{
 	messageElement.innerText  = response.messages[i].text;
 	// メッセージを囲む枠
 	const rowElement = document.createElement("div");
-	rowElement.className = isMine+"row";
+	rowElement.className = isMine + "row";
 	rowElement.appendChild(messageElement);
 
 	const userElement = document.createElement("div");
 	const userImg = document.createElement("img");
-	userElement.className = isMine+"user";
-	userImg.className = isMine+"userImg";
-	const UserResponse = JSON.parse(UserRequest.responseText);
-	let userID =user(response,i,UserResponse);
-
-	if(UserResponse.members[userID]){
-		userImg.src=UserResponse.members[userID].profile.image_72;
+	userElement.className = isMine + "user";
+	userImg.className = isMine + "userImg";
+	let userID = GetUserIndex(response,i,UserResponse);
+	var menber = UserResponse.members[userID]
+	if(menber){
+		userImg.src=menber.profile.image_72;
 	
-		if(!UserResponse.members[userID].profile.display_name){
-			userElement.textContent = UserResponse.members[userID].name;
+		if(!menber.profile.display_name){
+			userElement.textContent = menber.name;
 		}
 		else{
-			userElement.textContent = UserResponse.members[userID].profile.display_name;
+			userElement.textContent = menber.profile.display_name;
 		}
 	}
 	else{
@@ -100,11 +100,11 @@ const put=(UserRequest,response,i,resElement)=>{
 	// 投稿時間
 	const timeElement = document.createElement("div");
 	timeElement.className = isMine+"time";
-	const time =new Date(response.messages[i].ts * 1000);
-	var timeStr=time.getHours() < 12 ? `午前 ${time.getHours()}:` : `午後 ${time.getHours() - 12}:`;
-	timeStr+= time.getMinutes() <10 ? `0${time.getMinutes()}`:time.getMinutes();
+	const time = new Date(response.messages[i].ts * 1000);
+	var timeStr = time.getHours() < 12 ? `午前 ${time.getHours()}:` : `午後 ${time.getHours() - 12}:`;
+	timeStr += time.getMinutes() <10 ? `0${time.getMinutes()}`:time.getMinutes();
 	timeElement.textContent = timeStr;
-	if("UB6EXC17U"==response.messages[i].user){
+	if("my" === isMine){
 		resElement.appendChild(userElement);
 		resElement.appendChild(userImg);
 	}		
@@ -115,11 +115,11 @@ const put=(UserRequest,response,i,resElement)=>{
 	resElement.appendChild(rowElement);
 	resElement.appendChild(timeElement);
 };
-const user =(response,i,UserResponse)=>{
+const GetUserIndex =(response,i,UserResponse)=>{
 	for(j=0;j<UserResponse.members.length;j++){
-	if(response.messages[i].user==UserResponse.members[j].id){
-		return j;
-	}
+		if(response.messages[i].user == UserResponse.members[j].id){
+			return j;
+		}
 	}
 }
 const sendMessage=(token,channelID)=>{
@@ -127,7 +127,7 @@ const sendMessage=(token,channelID)=>{
 	if(!text) return;
 	let postUrl = `https://slack.com/api/chat.postMessage?token=${token}&channel=${channelID}&text=${text}`;
 	const request = new XMLHttpRequest();
-	sessionStorage.removeItem("textData")
+	sessionStorage.removeItem("textData");
 	request.open("POST", postUrl,true);
 	request.send(null);
 };
