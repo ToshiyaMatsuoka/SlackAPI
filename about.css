@@ -1,0 +1,83 @@
+.messagesContainer {
+    margin: 30 auto;
+    width: 95%;
+    height: 85%;
+    max-width: 1300px;
+    padding: 1em;
+    border: 1px solid #CCC;
+    background-color: rgb(8, 150, 245);
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  .aboutRow {
+    border-radius: 3em;
+    background-color :rgba(126, 252, 0);
+    align-content: center;
+    position: relative;
+    left: 30%;
+    margin: 1.5em 15px 1.5em 0;
+    padding: 7px 25px;
+    max-width: 60%;
+    font-size: 16px;
+  }
+  .aboutRow:before {
+    content: "";
+    position: absolute;
+    left: 90%;
+    margin-top: -15px;
+    border: 15px solid transparent;
+    border-left: 15px solid  rgba(126, 252, 0);
+    z-index: 0;
+    transform: rotate(45deg);
+  }
+  
+  .aboutTime {
+    box-sizing: border-box;
+    position: relative;
+    text-align: left;
+    left: 30%;
+    color:gainsboro;
+    top: -1em;
+  }
+  .aboutUser {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 70%;
+    position: relative;
+    text-align: right;
+    color:gainsboro;
+    left: 20%
+  }
+  .aboutUserImg {
+    display: inline-block;
+    width:40px;
+    height:40px;
+    border-radius: 20em;
+    position: relative;
+    top: 0.5em;
+    left: 22%;
+  }
+  .message {
+    display: inline-block;
+    box-sizing: border-box;
+    word-wrap:normal;
+  }
+  
+  .backBtn{
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 5px 15px;
+    background-color: lawngreen;
+    color: #fff;
+    border-style: none;
+    position: relative;
+    top: -1em;
+    align-content: center;
+}
+  
+  .backBtn:hover {
+    background-color: rgb(9, 107, 9);
+    color: #fff;
+  }  
+  
+  
