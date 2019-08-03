@@ -2,19 +2,21 @@
 	const token = "dummy";
 	const channelID = "CB74M5Y6B";
 	const button = document.querySelector("#sender");
+	const userUrl = `https://slack.com/api/users.list?token=${token}`;
 	
 	button.addEventListener("click",sendMessage(token,channelID));
 	const messagesContainer = document.querySelector(".messagesContainer");
 	messagesContainer.textContent = null;
-	let userUrl = `https://slack.com/api/users.list?token=${token}`;
 	const UserRequest = new XMLHttpRequest();
 	UserRequest.open("GET", userUrl,true);
 	UserRequest.send(null);	
 	UserRequest.onload=()=>{
-	getMessages(token,channelID,UserRequest);
+	const UserResponse = JSON.parse(UserRequest.responseText);
+
+	getMessages(token,channelID,UserResponse);
 	}
 };
-const getMessages = (token,channelID,UserRequest,last =null) => {
+const getMessages = (token,channelID,UserResponse,last =null) => {
 	const request = new XMLHttpRequest();
 	let url = `https://slack.com/api/channels.history?token=${token}&channel=${channelID}&count=10`;
 	if(last){
@@ -29,21 +31,20 @@ const getMessages = (token,channelID,UserRequest,last =null) => {
 	request.onload = () => {
 
 	const response = JSON.parse(request.responseText);
-	SetMessases(response,UserRequest);
+	SetMessases(response,UserResponse);
 		if (response.has_more) {
 			const messageCount = response.messages.length;
 			const oldestTimeStamp = response.messages[messageCount - 1].ts;
-			getMessages(token,channelID,UserRequest,oldestTimeStamp);
+			getMessages(token,channelID,UserResponse,oldestTimeStamp);
 		}
 	}
 
 };
 
-const SetMessases = (response,UserRequest) => {
+const SetMessases = (response,UserResponse) => {
 
 	const pageElement = document.createElement("div");
 	pageElement.className = "page";
-	const UserResponse = JSON.parse(UserRequest.responseText);
 
 	// 新しいものから格納されているので、リストの最後から見ていく
 	const messageCount = response.messages.length;
@@ -125,13 +126,13 @@ const GetUserIndex =(response,i,UserResponse)=>{
 const sendMessage=(token,channelID)=>{
 	const text = sessionStorage.getItem("textData");
 	if(!text) return;
-	let postUrl = `https://slack.com/api/chat.postMessage?token=${token}&channel=${channelID}&text=${text}`;
+	const postUrl = `https://slack.com/api/chat.postMessage?token=${token}&channel=${channelID}&text=${text}`;
 	const request = new XMLHttpRequest();
 	sessionStorage.removeItem("textData");
-	request.open("POST", postUrl,true);
+	request.open("GET", postUrl,true);
 	request.send(null);
 };
-const alertValue = ($this) => {
+const SaveText = ($this) => {
 	sessionStorage.setItem("textData", $this.value);
 }
 
