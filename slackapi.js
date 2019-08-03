@@ -66,7 +66,7 @@ const SetMessases = (response,UserRequest) => {
 const PutElement=(UserResponse,response,i,resElement)=>{
 	let isMine = "";
 	if("UB6EXC17U" == response.messages[i].user){
-		isMine = "my";
+		isMine = "mine";
 	}
 
 	// メッセージ本文
@@ -104,7 +104,7 @@ const PutElement=(UserResponse,response,i,resElement)=>{
 	var timeStr = time.getHours() < 12 ? `午前 ${time.getHours()}:` : `午後 ${time.getHours() - 12}:`;
 	timeStr += time.getMinutes() <10 ? `0${time.getMinutes()}`:time.getMinutes();
 	timeElement.textContent = timeStr;
-	if("my" === isMine){
+	if("mine" === isMine){
 		resElement.appendChild(userElement);
 		resElement.appendChild(userImg);
 	}		
