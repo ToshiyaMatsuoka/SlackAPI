@@ -61,6 +61,7 @@ const SetMessases = (response,UserResponse) => {
 	} else {
 		// 先頭に追加
 		messagesContainer.insertBefore(pageElement, messagesContainer.children[0]);
+		messagesContainer.scrollBy(0,10000);
 	}
 };
 
@@ -74,9 +75,20 @@ const PutElement=(UserResponse,response,i,resElement)=>{
 	const messageElement = document.createElement("div");
 	messageElement.className = "message";
 	messageElement.innerText  = response.messages[i].text;
+	const textLength = response.messages[i].text.length;
+	msgWidth =textLength < 40 ? `${textLength}em` : "100%";
+	
 	// メッセージを囲む枠
 	const rowElement = document.createElement("div");
 	rowElement.className = isMine + "row";
+	rowWidth =textLength < 40 ? `${textLength + 2}em` : "60%";
+
+	if(window.innerWidth<1150){
+		msgWidth = "100%";
+		rowWidth = "60%";
+	}
+	messageElement.style.width = msgWidth;
+	rowElement.style.width = rowWidth;
 	rowElement.appendChild(messageElement);
 
 	const userElement = document.createElement("div");
@@ -108,10 +120,17 @@ const PutElement=(UserResponse,response,i,resElement)=>{
 	if("mine" === isMine){
 		resElement.appendChild(userElement);
 		resElement.appendChild(userImg);
+		let elmleft = textLength < 40 ? `${58-textLength}em` : "30%";
+		if(window.innerWidth<1150){
+			elmleft = "30%";
+		}
+		rowElement.style.left = elmleft;
+		timeElement.style.left = elmleft;
 	}		
 	else{
 		resElement.appendChild(userImg);
 		resElement.appendChild(userElement);
+		timeElement.style.right = textLength < 40 ? `${65-textLength}em` : "35%"
 	}
 	resElement.appendChild(rowElement);
 	resElement.appendChild(timeElement);
@@ -135,4 +154,6 @@ const sendMessage=(token,channelID)=>{
 const SaveText = ($this) => {
 	sessionStorage.setItem("textData", $this.value);
 }
-
+const transPage = () => {
+	sessionStorage.removeItem("textData");
+}
